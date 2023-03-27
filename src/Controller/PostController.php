@@ -26,7 +26,6 @@ class PostController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            dump($post);
             //$entityManager->persist($post);
             //$entityManager->flush();
         }
