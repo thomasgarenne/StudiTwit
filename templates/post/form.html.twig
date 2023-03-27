@@ -1,0 +1,12 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+<div class="w-75 m-auto mt-4">
+    {{ form_start(post_form) }}
+        {{ form_row(post_form.title) }}
+        {{ form_row(post_form.content) }}
+        {{ form_row(post_form.image) }}
+        <button type="submit" class="btn btn-primary">Valider</button>
+    {{ form_end(post_form) }}
+</div>
+{% endblock %}
