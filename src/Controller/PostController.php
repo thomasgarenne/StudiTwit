@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PostController extends AbstractController
 {
-    #[Route('/posts', name: 'app_post')]
+    #[Route('/', name: 'app_post')]
     public function index(ManagerRegistry $managerRegistry): Response
     {
         $results = $managerRegistry->getRepository(Post::class)->findAll();
