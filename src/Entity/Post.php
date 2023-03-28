@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -27,9 +26,6 @@ class Post
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
-
-    //#[ORM\ManyToOne(TargetEntity="App\Entity\User", inversedBy="Post")]
-    //private User $user;.
 
     public function getId(): ?int
     {
