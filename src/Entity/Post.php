@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
@@ -14,13 +16,20 @@ class Post
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le titre ne peut pas être vide")]
+    #[Assert\Length(min: 3, max: 20, minMessage: "Le titre doit faire plus de 3 caractères", maxMessage: "Le titre doit faire moins de 20 caractères")]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le titre ne peut pas être vide")]
+    #[Assert\Length(min: 3, max: 200, minMessage: "Le titre doit faire plus de 3 caractères", maxMessage: "Le titre doit faire moins de 200 caractères")]
     private ?string $content = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
+
+    //#[ORM\ManyToOne(TargetEntity="App\Entity\User", inversedBy="Post")]
+    //private User $user;.
 
     public function getId(): ?int
     {

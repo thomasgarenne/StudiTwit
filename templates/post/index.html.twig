@@ -1,5 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+<div class="row justify-content-center my-2">
+    {% for result in results %}
+        <div class="card col-3 m-2">
+        {% if result.getImage() %}
+            <img class="card-img-top" src={{ result.getImage() }}>
+        {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ result.getTitle() }}</h5>
+                <p class="card-text">{{ result.getContent() }}</p>
 
+                <a href="{{ path('app_post_edit', {'id' : result.id}) }}" class="btn btn-primary">Modifier</a>
+                <a href="{{ path('app_post_delete', {'id' : result.id}) }}" class="btn btn-danger">Supprimer</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}
