@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Form\PostType;
+use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,12 +16,19 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class PostController extends AbstractController
 {
     #[Route('/', name: 'app_post')]
-    public function index(ManagerRegistry $managerRegistry): Response
+    public function index(Request $request, PostRepository $postRepository, ManagerRegistry $managerRegistry): Response
     {
+        $search = $request->query->get("search");
+        if ($search) {
+            $posts = $postRepository->findByTitle($search);
+            dd($posts);
+        }
+
         $results = $managerRegistry->getRepository(Post::class)->findAll();
 
         return $this->render('post/index.html.twig', [
-            "results" => $results
+            "results" => $results,
+            //"posts" => $posts
         ]);
     }
 
