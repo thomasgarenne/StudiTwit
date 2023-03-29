@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class PostController extends AbstractController
 {
@@ -26,12 +27,14 @@ class PostController extends AbstractController
     #[Route('/post/new')]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         if ($this->getUser()) {
             $post = new Post();
             $form = $this->createForm(PostType::class, $post);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 $post->setUser($this->getUser());
+                $post->setCreatedAt(new \DateTime());
                 $entityManager->persist($post);
                 $entityManager->flush();
                 return $this->redirectToRoute('app_post');
@@ -49,6 +52,10 @@ class PostController extends AbstractController
     public function delete(Post $post, ManagerRegistry $managerRegistry): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        if ($this->getUser() !== $post->getUser()) {
+            $this->addFlash("error", "Vous ne pouvez pas supprimer une publication qui ne vous appartient pas");
+            return $this->redirectToRoute('app_post');
+        }
         $managerRegistry->getManager()->remove($post);
         $managerRegistry->getManager()->flush();
 
@@ -60,6 +67,11 @@ class PostController extends AbstractController
     public function update(Post $post, Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        if ($this->getUser() !== $post->getUser()) {
+            $this->addFlash("error", "Vous ne pouvez pas modifier une publication qui ne vous appartient pas");
+            return $this->redirectToRoute('app_post');
+            //throw new AccessDeniedException("vous ne pouvez pas accéder à cette page");
+        }
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -68,7 +80,7 @@ class PostController extends AbstractController
             return $this->redirectToRoute('app_post');
         }
         return $this->render('post/form.html.twig', [
-            "post_form" => $form->createView()
+            "post_form" => $form->createView(),
         ]);
     }
 }

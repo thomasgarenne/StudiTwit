@@ -29,6 +29,9 @@ class Post
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
+    #[ORM\Column(type: "datetime")]
+    private $createdAt;
+
     #[ORM\ManyToOne(inversedBy: 'posts', targetEntity: 'App\Entity\User')]
     private ?User $User = null;
 
@@ -81,6 +84,18 @@ class Post
     public function setUser(?User $User): self
     {
         $this->User = $User;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return date_format($this->createdAt, "d-m-Y H:i");
+    }
+
+    public function setCreatedAt(?DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

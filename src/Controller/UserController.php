@@ -27,6 +27,7 @@ class UserController extends AbstractController
         $form = $this->createForm(LoginType::class, $user);
 
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($user);
             $entityManager->flush();
