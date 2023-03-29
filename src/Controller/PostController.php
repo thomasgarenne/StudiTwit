@@ -26,25 +26,29 @@ class PostController extends AbstractController
     #[Route('/post/new')]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $post = new Post();
-        $form = $this->createForm(PostType::class, $post);
+        if ($this->getUser()) {
+            $post = new Post();
+            $form = $this->createForm(PostType::class, $post);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $post->setUser($this->getUser());
+                $entityManager->persist($post);
+                $entityManager->flush();
+                return $this->redirectToRoute('app_post');
+            }
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $post->setUser($this->getUser());
-            $entityManager->persist($post);
-            $entityManager->flush();
-            return $this->redirectToRoute('app_post');
+            return $this->render('post/form.html.twig', [
+                "post_form" => $form->createView()
+            ]);
         }
 
-        return $this->render('post/form.html.twig', [
-            "post_form" => $form->createView()
-        ]);
+        return $this->redirectToRoute("login");
     }
 
     #[Route('/post/delete/{id<\d+>}', name: 'app_post_delete')]
     public function delete(Post $post, ManagerRegistry $managerRegistry): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $managerRegistry->getManager()->remove($post);
         $managerRegistry->getManager()->flush();
 
@@ -52,8 +56,10 @@ class PostController extends AbstractController
     }
 
     #[Route('/post/edit/{id<\d+>}', name: 'app_post_edit')]
+
     public function update(Post $post, Request $request, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

@@ -10,14 +10,20 @@
     <form method="post" class="container">
         <label for="username">Nom d'utilisateur</label>
         <input type="text" name="_username" id="username" value="{{ lastUsername }}" class="form-control" required>
-
-        <label for="password">Mot de passe</label>
-        <input type="text" name="_password" id="password" class="form-control" required>
-
+    <label for="password">Mot de passe</label>
+    <div class="input-group">
+        <input type="password" name="_password" id="password" class="form-control" required>
+        <span class="input-group-text" onClick=togglePassword()>
+        <i class="bi bi-eye-slash" id="eye-slash" style="display:none"></i>
+        <i class="bi bi-eye" id="eye"></i>
+        </span>
+    </div>
         <input type="hidden" name="_target_path" value="/">
 
         <input type="submit" value="Se connecter" class="btn btn-success my-2"></input>
     </form>
     <a href="{{path('app_user_new')}}">Créer un compte</a>
+    
+    <script src="{{asset('js/script.js')}}"></script>
 
 {% endblock %}
