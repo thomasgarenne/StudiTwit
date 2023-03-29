@@ -9,10 +9,12 @@
         {% endif %}
             <div class="card-body">
                 <h5 class="card-title">{{ result.getTitle() }}</h5>
+                <h6 class="card-text">{{ result.User.email }}</h6>
                 <p class="card-text">{{ result.getContent() }}</p>
-
+                {% if app.user %}
                 <a href="{{ path('app_post_edit', {'id' : result.id}) }}" class="btn btn-primary">Modifier</a>
                 <a href="{{ path('app_post_delete', {'id' : result.id}) }}" class="btn btn-danger">Supprimer</a>
+                {% endif %}
             </div>
         </div>
     {% endfor %}

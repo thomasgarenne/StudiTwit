@@ -27,7 +27,7 @@ class Post
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
-    #[ORM\ManyToOne(inversedBy: 'posts')]
+    #[ORM\ManyToOne(inversedBy: 'posts', targetEntity: 'App\Entity\User')]
     private ?User $User = null;
 
     public function getId(): ?int
