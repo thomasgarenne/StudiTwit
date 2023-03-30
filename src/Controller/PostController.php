@@ -5,13 +5,16 @@ namespace App\Controller;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+//use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class PostController extends AbstractController
 {
@@ -21,7 +24,6 @@ class PostController extends AbstractController
         $search = $request->query->get("search");
         if ($search) {
             $posts = $postRepository->findByTitle($search);
-            dd($posts);
         }
 
         $results = $managerRegistry->getRepository(Post::class)->findAll();
@@ -33,16 +35,25 @@ class PostController extends AbstractController
     }
 
     #[Route('/post/new')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    public function create(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         if ($this->getUser()) {
             $post = new Post();
             $form = $this->createForm(PostType::class, $post);
             $form->handleRequest($request);
+
             if ($form->isSubmitted() && $form->isValid()) {
                 $post->setUser($this->getUser());
                 $post->setCreatedAt(new \DateTime());
+
+                $file = $form->get('image')->getData();
+                if ($file) {
+                    $fileName = $fileUploader->upload($file);
+                    $post->setImage($fileName);
+                }
+
                 $entityManager->persist($post);
                 $entityManager->flush();
                 return $this->redirectToRoute('app_post');

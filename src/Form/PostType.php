@@ -4,8 +4,10 @@ namespace App\Form;
 
 use App\Entity\Post;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class PostType extends AbstractType
 {
@@ -14,8 +16,18 @@ class PostType extends AbstractType
         $builder
             ->add('title')
             ->add('content')
-            ->add('image')
-        ;
+            ->add('image', FileType::class, [
+                'constraints' => [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/png',
+                            'image/jpeg',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid PNG, JPEG image',
+                    ])
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -12,10 +12,10 @@
 {% for result in results %}
     <div class="card col-3 m-2">
         {% if result.getImage() %}
-        <img class="card-img-top" src={{ result.getImage() }}>
+        <img class="card-img-top" src={{  asset('uploads/' ~ result.image) }}>
         {% endif %}
         <div class="card-body">
-            <h5 class="card-title">{{ result.getTitle() }}</h5>
+            <h5 class="card-title">{{ result.title }}</h5>
             <h6 class="card-text">{{ result.User.email }}</h6>
             <h6 class="card-text">{{ result.createdAt }}</h6>
             <p class="card-text">{{ result.getContent() }}</p>
